@@ -19,16 +19,20 @@ func main() {
 	s := bufio.NewScanner(f)
 	for s.Scan() {
 		var i int
-		if _, err := fmt.Sscanf(s.Text(), "%d", &i); err != nil {
+		if _, err = fmt.Sscanf(s.Text(), "%d", &i); err != nil {
 			log.Fatalln("could not parse line:", err)
 		}
 
 		delta = append(delta, i)
 	}
+	if err = s.Err(); err != nil {
+		log.Fatalln("cannot read input file:", err)
+	}
 
 	fmt.Println("answer:", duplicate(delta))
 }
 
+// duplicate returns the first value seen twice when summing the inputs from delta.
 func duplicate(delta []int) int {
 	seen := make(map[int]struct{})
 	var freq int
