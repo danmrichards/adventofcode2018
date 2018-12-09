@@ -9,6 +9,22 @@ import (
 	"strings"
 )
 
+// compare returns two strings containing the common and differing runes from
+// input strings a and b.
+func compare(a, b string) (diff string, common string) {
+	d := make([]rune, 0, len(a))
+	c := make([]rune, 0, len(a))
+	for i := range a {
+		if a[i] == b[i] {
+			c = append(c, rune(b[i]))
+		} else {
+			d = append(d, rune(b[i]))
+		}
+	}
+
+	return string(d), string(c)
+}
+
 func main() {
 	var ids []string
 	f, err := os.Open("input")
@@ -38,20 +54,4 @@ func main() {
 			os.Exit(0)
 		}
 	}
-}
-
-// compare returns two strings containing the common and differing runes from
-// input strings a and b.
-func compare(a, b string) (diff string, common string) {
-	d := make([]rune, 0, len(a))
-	c := make([]rune, 0, len(a))
-	for i := range a {
-		if a[i] == b[i] {
-			c = append(c, rune(b[i]))
-		} else {
-			d = append(d, rune(b[i]))
-		}
-	}
-
-	return string(d), string(c)
 }

@@ -7,6 +7,23 @@ import (
 	"os"
 )
 
+// count returns true if id contains exactly n of a character within itself.
+// e.g. id = abbcde n = 2 returns true because it has 2 'b'.
+func count(id string, n int) bool {
+	runes := make(map[rune]int)
+	for _, char := range id {
+		runes[char]++
+	}
+
+	for _, rn := range runes {
+		if rn == n {
+			return true
+		}
+	}
+
+	return false
+}
+
 func main() {
 	f, err := os.Open("input")
 	if err != nil {
@@ -14,7 +31,7 @@ func main() {
 	}
 	defer f.Close()
 
-	var twos, threes uint
+	var twos, threes int
 
 	s := bufio.NewScanner(f)
 	for s.Scan() {
@@ -30,21 +47,4 @@ func main() {
 	}
 
 	fmt.Println("answer:", twos*threes)
-}
-
-// count returns true if id contains exactly n of a character within itself.
-// e.g. id = abbcde n = 2 returns true because it has 2 'b'.
-func count(id string, n uint) bool {
-	runes := make(map[rune]uint)
-	for _, char := range id {
-		runes[char]++
-	}
-
-	for _, rn := range runes {
-		if rn == n {
-			return true
-		}
-	}
-
-	return false
 }

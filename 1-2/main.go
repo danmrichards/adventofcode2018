@@ -7,6 +7,22 @@ import (
 	"os"
 )
 
+// duplicate returns the first value seen twice when summing the inputs from delta.
+func duplicate(delta []int) int {
+	seen := make(map[int]struct{})
+	var freq int
+
+	for {
+		for _, d := range delta {
+			freq += d
+			if _, ok := seen[freq]; ok {
+				return freq
+			}
+			seen[freq] = struct{}{}
+		}
+	}
+}
+
 func main() {
 	var delta []int
 
@@ -30,20 +46,4 @@ func main() {
 	}
 
 	fmt.Println("answer:", duplicate(delta))
-}
-
-// duplicate returns the first value seen twice when summing the inputs from delta.
-func duplicate(delta []int) int {
-	seen := make(map[int]struct{})
-	var freq int
-
-	for {
-		for _, d := range delta {
-			freq += d
-			if _, ok := seen[freq]; ok {
-				return freq
-			}
-			seen[freq] = struct{}{}
-		}
-	}
 }

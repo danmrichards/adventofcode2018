@@ -33,36 +33,71 @@ type coord struct {
 	x, y int
 }
 
-// fabric represents the set of claims.
+// fabric represents the set of claims, each coordinate having a slice of
+// claim ids.
 type fabric struct {
-	claims map[coord]int
+	ids    map[int]struct{}
+	claims map[coord][]int
 }
 
 // claim claims points on the fabric for the area in claim c.
 func (f *fabric) claim(c *claim) {
+	f.ids[c.id] = struct{}{}
 	for x := 0; x < c.w; x++ {
 		for y := 0; y < c.h; y++ {
-			f.claims[coord{x: c.x + x, y: c.y + y}]++
+			xy := coord{x: c.x + x, y: c.y + y}
+			f.claims[xy] = append(f.claims[xy], c.id)
 		}
 	}
 }
 
-// overlap returns the amount of fabric claimed by >= n claims.
-func (f *fabric) overlap(n int) int {
-	var count int
-	for _, c := range f.claims {
-		if c >= n {
-			count++
+// free returns the id of the claim which does not overlap with any other claims.
+func (f *fabric) free() int {
+	ids := copyMap(f.ids)
+
+	for _, cids := range f.claims {
+		if len(cids) <= 1 {
+			continue
+		}
+
+		for _, id := range cids {
+			delete(ids, id)
+		}
+
+		if len(ids) == 1 {
+			break
 		}
 	}
-	return count
+
+	return pop(ids)
 }
 
 // newFabric returns a new fabric.
 func newFabric() fabric {
 	return fabric{
-		claims: make(map[coord]int),
+		ids:    make(map[int]struct{}),
+		claims: make(map[coord][]int),
 	}
+}
+
+// copyMap returns a new map with the values copied from src.
+func copyMap(src map[int]struct{}) map[int]struct{} {
+	dst := make(map[int]struct{})
+	for s := range src {
+		dst[s] = struct{}{}
+	}
+
+	return dst
+}
+
+// pop returns the "first" index from the src map.
+// Unreliable for maps with len > 1 as range iterates in an non-deterministic
+// order.
+func pop(src map[int]struct{}) int {
+	for i := range src {
+		return i
+	}
+	return 0
 }
 
 func main() {
@@ -86,5 +121,5 @@ func main() {
 		log.Fatalln("cannot read input file:", err)
 	}
 
-	fmt.Println("answer:", fabric.overlap(2))
+	fmt.Println("answer:", fabric.free())
 }
