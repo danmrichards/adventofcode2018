@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 )
 
 func main() {
@@ -13,18 +12,14 @@ func main() {
 	if err != nil {
 		log.Fatalln("cannot open input file:", err)
 	}
-	defer func () {
-		if err = f.Close(); err != nil {
-			log.Fatalln("cannot close input file:", err)
-		}
-	}()
+	defer f.Close()
 
 	var output int
 
 	s := bufio.NewScanner(f)
 	for s.Scan() {
-		i, err := strconv.Atoi(s.Text())
-		if err != nil {
+		var i int
+		if _, err := fmt.Sscanf(s.Text(), "%d", &i); err != nil {
 			log.Fatalln("could not parse line:", err)
 		}
 
